@@ -30,9 +30,20 @@ public class BreastCancerClassify {
 	 */
 	public static double calculateDistance(int[] first, int[] second)
 	{
-		double distance; 
+		double distance = 0.0; 
+		double temp = 0.0;
 		
-		for ( int i = 1; )
+		for ( int i = 1; i < first.length - 1; i++ ) {
+			
+			for ( int j = 1; j < second.length - 1; j++ ) {
+				
+				temp = Math.pow( (first[i] + second[j]), 2 );
+				distance += temp;			
+			}
+		}
+		
+		distance = Math.pow(distance, 0.5);
+		return distance;
 	}
 	
 	/**
@@ -42,7 +53,13 @@ public class BreastCancerClassify {
 	 */
 	public static double[] getAllDistances(int[][] trainData, int[] testInstance)
 	{
-		double[] allDistances = null;
+		double[] allDistances = new double[(trainData.length)];
+		
+		for ( int row = 0; row < trainData.length; row++ ) {
+			
+			allDistances[row] = calculateDistance(trainData[row], testInstance);
+		}
+		
 		return allDistances;
 	}
 	
@@ -72,7 +89,32 @@ public class BreastCancerClassify {
 	 */
 	public static int classify(int[][] trainData, int[] kClosestIndexes)
 	{
-		return -1;
+		int malignant = 0; 
+		int benign = 0;
+		
+		for ( int i = 0; i < kClosestIndexes.length; i++) {
+			
+			if ( trainData[i][trainData.length-1] == 2 ) {
+				
+				benign++;				
+			} else {
+				
+				malignant++;
+			}
+		}
+		
+		if ( benign > malignant ) {
+			
+			return 2;
+			
+		} else if ( benign < malignant){
+			
+			return 4;
+			
+		} else {
+			
+			return 2;
+		}
 	}
 	
 	/**
