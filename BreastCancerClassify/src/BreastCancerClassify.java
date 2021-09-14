@@ -1,9 +1,9 @@
 /**
- * Name:
+ * Name: Kavya Srikumar
  * Mrs. Kankelborg
- * Period 
+ * Period 3
  * Project 0 Breast Cancer Classifier
- * Date last updated: 
+ * Date last updated: 9/13/2021
  * 
  * BreastCancerClassify contains the core implementation of the 
  * kNearestNeighbors algorithm to classify cell clumps as malignant
@@ -30,7 +30,9 @@ public class BreastCancerClassify {
 	 */
 	public static double calculateDistance(int[] first, int[] second)
 	{
-		return -1;
+		double distance; 
+		
+		for ( int i = 1; )
 	}
 	
 	/**
