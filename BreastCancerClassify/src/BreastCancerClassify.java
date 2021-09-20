@@ -28,18 +28,15 @@ public class BreastCancerClassify {
 	 * calculateDistance computes the distance between the two data
 	 * parameters. 
 	 */
-	public static double calculateDistance(int[] first, int[] second)
-	{
+	public static double calculateDistance(int[] first, int[] second) {
+		
 		double distance = 0.0; 
 		double temp = 0.0;
 		
 		for ( int i = 1; i < first.length - 1; i++ ) {
-			
-			for ( int j = 1; j < second.length - 1; j++ ) {
 				
-				temp = Math.pow( (first[i] + second[j]), 2 );
-				distance += temp;			
-			}
+				temp = Math.pow( (first[i] - second[i]), 2 );
+				distance += temp;	
 		}
 		
 		distance = Math.pow(distance, 0.5);
@@ -51,8 +48,8 @@ public class BreastCancerClassify {
 	 * to each training instance. The double[] returned should have the 
 	 * same number of instances as trainData. 
 	 */
-	public static double[] getAllDistances(int[][] trainData, int[] testInstance)
-	{
+	public static double[] getAllDistances(int[][] trainData, int[] testInstance) {
+		
 		double[] allDistances = new double[(trainData.length)];
 		
 		for ( int row = 0; row < trainData.length; row++ ) {
@@ -71,9 +68,33 @@ public class BreastCancerClassify {
 	 * 
 	 * Be careful! This method can be tricky.
 	 */
-	public static int[] findKClosestEntries(double[] allDistances)
-	{
-		int[] kClosestIndexes = null;
+	public static int[] findKClosestEntries(double[] allDistances) {
+		
+		int[] index = new int[allDistances.length];
+		int[] kClosestIndexes = new int[K];
+		
+		for ( int i = 0; i < allDistances.length; i ++ ) {
+			index[i] = i;
+		}
+		
+		for ( int min = 0 ; min < K; min++ ) {
+			
+			for ( int j = min + 1; j < allDistances.length; j++ ) {
+				
+				if ( allDistances[index[j]] < allDistances[index[min]] ) {
+					
+					int temp = index[min];
+					index[min] = index[j];
+					index[j] = temp;					
+				}				
+			}			
+		}
+		
+		for ( int i = 0; i < K; i++) {
+			
+			kClosestIndexes[i] = index[i];
+		}
+		
 		return kClosestIndexes;
 	}
 	
@@ -87,32 +108,23 @@ public class BreastCancerClassify {
 	 * 
 	 * Return one of the global integer constants defined in this function. 
 	 */
-	public static int classify(int[][] trainData, int[] kClosestIndexes)
-	{
+	public static int classify(int[][] trainData, int[] kClosestIndexes) {
+		
 		int malignant = 0; 
 		int benign = 0;
 		
 		for ( int i = 0; i < kClosestIndexes.length; i++) {
-			
-			if ( trainData[i][trainData.length-1] == 2 ) {
-				
+		
+			if ( trainData[kClosestIndexes[i]][trainData.length-1] == 2 ) {
 				benign++;				
 			} else {
-				
 				malignant++;
 			}
 		}
 		
-		if ( benign > malignant ) {
-			
-			return 2;
-			
-		} else if ( benign < malignant){
-			
-			return 4;
-			
+		if ( malignant > benign ) {
+			return 4;	
 		} else {
-			
 			return 2;
 		}
 	}
@@ -128,15 +140,26 @@ public class BreastCancerClassify {
 	 * @param testData: all testing instances
 	 * @return: int array of classifications (BENIGN or MALIGNANT)
 	 */
-	public static int[] kNearestNeighbors(int[][] trainData, int[][] testData){
-		int[] myResults = null;
+	public static int[] kNearestNeighbors(int[][] trainData, int[][] testData) {
+		
+		int[] myResults = new int[testData[0].length];
+		double[] allDistances;
+		int[] kClosest;
+		
+		for ( int i = 0; i < testData.length; i++ ) {
+			allDistances = getAllDistances(trainData, testData[i]);	
+			kClosest = findKClosestEntries(allDistances);
+			myResults[i] = classify(trainData, kClosest);
+		}
+		
 		return myResults;
+		
 	}
 
 	/**
 	 * getAccuracy returns a String representing the classification accuracy.
 	 *
-	 * The retun String should be rounded to two decimal places followed by the % symbol.
+	 * The return String should be rounded to two decimal places followed by the % symbol.
 	 * Examples:
 	 * If 4 out of 5 outcomes were correctly predicted, the returned String should be: "80.00%"
 	 * If 3 out of 9 outcomes were correctly predicted, the returned String should be: "33.33%"
@@ -145,11 +168,25 @@ public class BreastCancerClassify {
 	 *
 	 * This method should work for any data set, given that the classification outcome is always
 	 * listed in the last column of the data set.
-	 * @param: myResults: The predicted classifcations produced by your KNN model
+	 * @param: myResults: The predicted classifications produced by your KNN model
 	 * @param: testData: The original data that contains the true classifications for the test data
 	 */
 	public static String getAccuracy(int[] myResults, int[][] testData) {
-		return null;
+		double correct = 0;
+		double total = myResults.length;
+		
+		for ( int i = 0; i < testData.length; i++)	{
+			
+			if ( myResults[i] == testData[i][testData.length-1] ) {
+				
+				correct++;
+			}
+		}
+		
+		double accuracy = ( correct / total ) * 100;
+		String result = String.format("%.2f", accuracy);
+		
+		return result;
 	}
 	
 	
