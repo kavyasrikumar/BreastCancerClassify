@@ -33,9 +33,8 @@ public class BreastCancerClassify {
 		double distance = 0.0; 
 		double temp = 0.0;
 		
-		for ( int i = 1; i < first.length - 1; i++ ) {
-				
-				temp = Math.pow( (first[i] - second[i]), 2 );
+		for (int i = 1; i < first.length - 1; i++) {
+				temp = Math.pow((first[i] - second[i]), 2);
 				distance += temp;	
 		}
 		
@@ -52,8 +51,7 @@ public class BreastCancerClassify {
 		
 		double[] allDistances = new double[(trainData.length)];
 		
-		for ( int row = 0; row < trainData.length; row++ ) {
-			
+		for (int row = 0; row < trainData.length; row++) {
 			allDistances[row] = calculateDistance(trainData[row], testInstance);
 		}
 		
@@ -73,16 +71,23 @@ public class BreastCancerClassify {
 		int[] index = new int[allDistances.length];
 		int[] kClosestIndexes = new int[K];
 		
+		// Initialize the array of indexes to point to the current
+		// values in allDistances array
+		//
 		for ( int i = 0; i < allDistances.length; i ++ ) {
 			index[i] = i;
 		}
 		
-		for ( int min = 0 ; min < K; min++ ) {
-			
-			for ( int j = min + 1; j < allDistances.length; j++ ) {
+		// The outer loop tracks the number of minimum values accounted for.
+		// The inner loop generates the next minimum value.
+		//
+		for (int min = 0 ; min < K; min++) {
+			for (int j = min + 1; j < allDistances.length; j++) {	
 				
-				if ( allDistances[index[j]] < allDistances[index[min]] ) {
-					
+				// If the current value is lower than the current minimum value
+				// swap
+				//
+				if (allDistances[index[j]] < allDistances[index[min]]) {
 					int temp = index[min];
 					index[min] = index[j];
 					index[j] = temp;					
@@ -90,8 +95,9 @@ public class BreastCancerClassify {
 			}			
 		}
 		
-		for ( int i = 0; i < K; i++) {
-			
+		// Generate a new array of size K.
+		//
+		for (int i = 0; i < K; i++) {
 			kClosestIndexes[i] = index[i];
 		}
 		
@@ -113,16 +119,17 @@ public class BreastCancerClassify {
 		int malignant = 0; 
 		int benign = 0;
 		
-		for ( int i = 0; i < kClosestIndexes.length; i++) {
-		
-			if ( trainData[kClosestIndexes[i]][trainData.length-1] == 2 ) {
+		// Classifies the unknown point based on the K nearest neighbors classifications.
+		//
+		for (int i = 0; i < kClosestIndexes.length; i++) {
+			if (trainData[kClosestIndexes[i]][trainData[0].length-1] == 2) {
 				benign++;				
 			} else {
 				malignant++;
 			}
 		}
 		
-		if ( malignant > benign ) {
+		if (malignant > benign) {
 			return 4;	
 		} else {
 			return 2;
@@ -142,18 +149,17 @@ public class BreastCancerClassify {
 	 */
 	public static int[] kNearestNeighbors(int[][] trainData, int[][] testData) {
 		
-		int[] myResults = new int[testData[0].length];
+		int[] myResults = new int[testData.length];
 		double[] allDistances;
 		int[] kClosest;
 		
-		for ( int i = 0; i < testData.length; i++ ) {
+		for (int i = 0; i < testData.length; i++) {
 			allDistances = getAllDistances(trainData, testData[i]);	
 			kClosest = findKClosestEntries(allDistances);
 			myResults[i] = classify(trainData, kClosest);
 		}
 		
 		return myResults;
-		
 	}
 
 	/**
@@ -172,13 +178,12 @@ public class BreastCancerClassify {
 	 * @param: testData: The original data that contains the true classifications for the test data
 	 */
 	public static String getAccuracy(int[] myResults, int[][] testData) {
+		
 		double correct = 0;
 		double total = myResults.length;
 		
-		for ( int i = 0; i < testData.length; i++)	{
-			
-			if ( myResults[i] == testData[i][testData.length-1] ) {
-				
+		for ( int i = 0; i < testData.length; i++)	{	
+			if ( myResults[i] == testData[i][testData[0].length-1] ) {
 				correct++;
 			}
 		}
